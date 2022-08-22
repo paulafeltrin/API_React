@@ -19,8 +19,16 @@ const GlobalStyle = createGlobalStyle`
 const Menu = styled.nav`
 display: flex;
 justify-content: space-evenly;
-width: 98vw;
+width: 100%;
 background-color: lightgray;
+
+  p{
+    font-size: 1.3rem;
+    color: black; 
+  }
+  p:hover{
+    color: purple;
+  }
 `
 
 export default class App extends React.Component{

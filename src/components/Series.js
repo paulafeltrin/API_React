@@ -12,6 +12,13 @@ const Div = styled.section`
 display: flex;
 flex-direction: column;
 text-align: center;
+
+input{
+    width: 20vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
 `
 
 const Ul = styled.ul`
@@ -23,13 +30,9 @@ li{
 }
 p{
     font-size: 1rem;
-    font-size: 1rem;
     margin: 0 auto;
     width: 50%;
-    padding: 2vh 0;
-}
-img{
-    padding-bottom: 5vh;
+    padding: 2vh 0 5vw 0;
 }
 `
 
@@ -39,13 +42,10 @@ const MyAPI_Series = axios.create({
 
 export default class Series extends React.Component{
     state = {
-        series: []
+        series: [],
+        listaSerie: []
     }
 
-    componentDidMount(){
-        this.getShow()
-    }
-    
     getShow = async() => {
         
         const response = await MyAPI_Series.get()
@@ -54,6 +54,7 @@ export default class Series extends React.Component{
             return{
                 ShowName: item.name,
                 ShowSinop: item.overview,
+                nota: item.vote_average,
                 ShowImg: `https://image.tmdb.org/t/p/w200/${item.poster_path}`
             }
         })
@@ -62,16 +63,40 @@ export default class Series extends React.Component{
         console.log(response)
     }
 
+    componentDidMount(){ //pra fazer acontecer (ESTADO INICIAL)
+        this.getShow()
+    }
+
+    handleSerie = (event) => {
+        const filterSerie = this.state.series.filter(item => {
+            if(item.ShowName.toLowerCase().includes(event.target.value.toLowerCase())){
+                return true
+            }else{
+              return false
+            }
+        })
+
+        this.setState({listaSerie: filterSerie})
+
+        if(event.target.value === ' '){
+            this.setState({listaSerie: []})
+          }
+    }
+
+
     render(){
         return(
             <Div>
             <Title>As melhores séries estão aqui</Title>
+            <input onChange={this.handleSerie} placeholder="Pesquisar"/>
             <Ul>
                 {this.state.series.map(item => (
                     <>
                         <li>{item.ShowName}</li>
+                        <li>Avaliação: {item.nota}</li>
+                        <img src={item.ShowImg} alt={`Poster da série ${item.ShowName}`}/>
                         <p>{item.ShowSinop}</p>
-                        <img src={item.ShowImg} />
+                        
                     </>
                 ))}
             </Ul>

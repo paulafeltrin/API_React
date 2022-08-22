@@ -15,6 +15,13 @@ const Div = styled.section`
 display: flex;
 flex-direction: column;
 text-align: center;
+
+input{
+    width: 20vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
 `
 
 const Ul = styled.ul`
@@ -28,10 +35,7 @@ p{
     font-size: 1rem;
     margin: 0 auto;
     width: 50%;
-    padding: 2vh 0;
-}
-img{
-    padding-bottom: 5vh;
+    padding: 2vh 0 5vw 0;
 }
 `
 
@@ -41,11 +45,8 @@ const MyApi_Movie = axios.create({
 
 export default class Filmes extends React.Component{
     state = {
-        movies:[]
-    }
-
-    componentDidMount(){
-        this.PegarApi()
+        movies:[],
+        listaMovie: []
     }
 
     PegarApi = async () => {
@@ -55,6 +56,7 @@ export default class Filmes extends React.Component{
         const infos = MinhaApi.data.results.map(item => {
             return{
                 nome: item.title,
+                nota: item.vote_average,
                 sinopse: item.overview,
                 img: `https://image.tmdb.org/t/p/w200/${item.poster_path}`
             }
@@ -62,15 +64,38 @@ export default class Filmes extends React.Component{
         this.setState({movies: infos})
     }
 
+    componentDidMount(){
+        this.PegarApi()
+    }
+
+    handleMovie = (event) => {
+        const filterMovie = this.state.movies.filter(item => {
+            if(item.nome.toLowerCase().includes(event.target.value.toLowerCase())){
+                return true
+            }else{
+              return false
+            }
+        })
+
+        this.setState({listaMovie: filterMovie})
+
+        if(event.target.value === ' '){
+            this.setState({listaMovie: []})
+          }
+    }
+
     render(){
         return(
             <Div>
                 <Title>Temos os melhores filmes para você curtir!</Title>
+                <input onChange={this.handleMovie} placeholder="Pesquisar"/>
                 <Ul>{this.state.movies.map(item => (
                     <>
                         <li>{item.nome}</li>
+                        <li>Avaliação: {item.nota}</li>
+                        <img src={item.img} alt={`Poster da série ${item.nome}`}/>
                         <p>{item.sinopse}</p>
-                        <img src={item.img} />
+                        
                     </>
                 ))}
                 </Ul>
